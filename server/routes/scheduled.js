@@ -29,14 +29,12 @@ async function getScheduledChargeModel() {
     return null;
   }
 }
-  }
-})();
 
 // GET /api/scheduled - Get all scheduled charges
 router.get('/', async (req, res) => {
   try {
     const ScheduledCharge = await getScheduledChargeModel();
-    const ScheduledCharge = await getScheduledChargeModel;
+    const ScheduledCharge = await getScheduledChargeModel();
     
     if (ScheduledCharge) {
       const { category, frequency } = req.query;
@@ -76,7 +74,6 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, amount, category, frequency, description, date } = req.body;
-    const ScheduledCharge = await getScheduledChargeModel;
     const ScheduledCharge = await getScheduledChargeModel();
 
     if (ScheduledCharge) {
@@ -124,7 +121,6 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, frequency, description, date } = req.body;
-    const ScheduledCharge = await getScheduledChargeModel;
     const ScheduledCharge = await getScheduledChargeModel();
 
     if (ScheduledCharge) {
@@ -173,7 +169,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const ScheduledCharge = await getScheduledChargeModel();
-    const ScheduledCharge = await getScheduledChargeModel;
     
     if (ScheduledCharge) {
       const scheduledCharge = await ScheduledCharge.findByIdAndDelete(req.params.id);
