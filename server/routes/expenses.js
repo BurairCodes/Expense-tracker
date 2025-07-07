@@ -36,14 +36,11 @@ async function getExpenseModel() {
     return null;
   }
 }
-  }
-})();
 
 // GET /api/expenses - Get all expenses with optional filters
 router.get('/', async (req, res) => {
   try {
     const Expense = await getExpenseModel();
-    const Expense = await getExpenseModel;
     
     if (Expense) {
       // Use MongoDB
@@ -93,7 +90,6 @@ router.get('/', async (req, res) => {
 router.get('/stats/summary', async (req, res) => {
   try {
     const Expense = await getExpenseModel();
-    const Expense = await getExpenseModel;
     
     if (Expense) {
       // Use MongoDB
@@ -161,7 +157,6 @@ router.get('/stats/summary', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const Expense = await getExpenseModel();
-    const Expense = await getExpenseModel;
     
     if (Expense) {
       const expense = await Expense.findById(req.params.id);
@@ -186,7 +181,6 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
-    const Expense = await getExpenseModel;
     const Expense = await getExpenseModel();
 
     if (Expense) {
@@ -231,7 +225,6 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
-    const Expense = await getExpenseModel;
     const Expense = await getExpenseModel();
 
     if (Expense) {
@@ -279,7 +272,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const Expense = await getExpenseModel();
-    const Expense = await getExpenseModel;
     
     if (Expense) {
       const expense = await Expense.findByIdAndDelete(req.params.id);
