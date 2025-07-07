@@ -1,28 +1,81 @@
 import express from 'express';
-import Expense from '../models/Expense.js';
 
 const router = express.Router();
+
+// In-memory storage fallback
+let expenses = [
+  {
+    _id: '1',
+    title: 'Grocery Shopping',
+    amount: 85.50,
+    category: 'Food',
+    description: 'Weekly grocery shopping',
+    date: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  },
+  {
+    _id: '2',
+    title: 'Gas Station',
+    amount: 45.00,
+    category: 'Transportation',
+    description: 'Fuel for car',
+    date: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  }
+];
+
+let nextId = 3;
+
+// Try to import Mongoose model, fallback to in-memory if not available
+let Expense = null;
+try {
+  const expenseModel = await import('../models/Expense.js');
+  Expense = expenseModel.default;
+} catch (error) {
+  console.log('Using in-memory storage for expenses');
+}
 
 // GET /api/expenses - Get all expenses with optional filters
 router.get('/', async (req, res) => {
   try {
-    const { category, startDate, endDate } = req.query;
-    const filters = {};
-    
-    if (category && category !== 'All') {
-      filters.category = category;
-    }
-    
-    if (startDate) {
-      filters.date = { ...filters.date, $gte: new Date(startDate) };
-    }
-    
-    if (endDate) {
-      filters.date = { ...filters.date, $lte: new Date(endDate) };
-    }
+    if (Expense) {
+      // Use MongoDB
+      const { category, startDate, endDate } = req.query;
+      const filters = {};
+      
+      if (category && category !== 'All') {
+        filters.category = category;
+      }
+      
+      if (startDate) {
+        filters.date = { ...filters.date, $gte: new Date(startDate) };
+      }
+      
+      if (endDate) {
+        filters.date = { ...filters.date, $lte: new Date(endDate) };
+      }
 
-    const expenses = await Expense.find(filters).sort({ date: -1 });
-    res.json(expenses);
+      const expenseData = await Expense.find(filters).sort({ date: -1 });
+      res.json(expenseData);
+    } else {
+      // Use in-memory storage
+      const { category, startDate, endDate } = req.query;
+      let filteredExpenses = [...expenses];
+      
+      if (category && category !== 'All') {
+        filteredExpenses = filteredExpenses.filter(exp => exp.category === category);
+      }
+      
+      if (startDate) {
+        filteredExpenses = filteredExpenses.filter(exp => new Date(exp.date) >= new Date(startDate));
+      }
+      
+      if (endDate) {
+        filteredExpenses = filteredExpenses.filter(exp => new Date(exp.date) <= new Date(endDate));
+      }
+      
+      res.json(filteredExpenses.sort((a, b) => new Date(b.date) - new Date(a.date)));
+    }
   } catch (error) {
     console.error('Error fetching expenses:', error);
     res.status(500).json({ error: 'Failed to fetch expenses' });
@@ -32,36 +85,62 @@ router.get('/', async (req, res) => {
 // GET /api/expenses/stats/summary - Get expense statistics
 router.get('/stats/summary', async (req, res) => {
   try {
-    const totalResult = await Expense.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: '$amount' },
-          count: { $sum: 1 }
+    if (Expense) {
+      // Use MongoDB
+      const totalResult = await Expense.aggregate([
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$amount' },
+            count: { $sum: 1 }
+          }
         }
-      }
-    ]);
+      ]);
 
-    const categoryStats = await Expense.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          total: { $sum: '$amount' },
-          count: { $sum: 1 }
+      const categoryStats = await Expense.aggregate([
+        {
+          $group: {
+            _id: '$category',
+            total: { $sum: '$amount' },
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $sort: { total: -1 }
         }
-      },
-      {
-        $sort: { total: -1 }
-      }
-    ]);
+      ]);
 
-    const stats = {
-      total: totalResult.length > 0 ? totalResult[0].total : 0,
-      count: totalResult.length > 0 ? totalResult[0].count : 0,
-      categories: categoryStats
-    };
+      const stats = {
+        total: totalResult.length > 0 ? totalResult[0].total : 0,
+        count: totalResult.length > 0 ? totalResult[0].count : 0,
+        categories: categoryStats
+      };
 
-    res.json(stats);
+      res.json(stats);
+    } else {
+      // Use in-memory storage
+      const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const count = expenses.length;
+      
+      const categoryTotals = {};
+      expenses.forEach(exp => {
+        if (!categoryTotals[exp.category]) {
+          categoryTotals[exp.category] = { total: 0, count: 0 };
+        }
+        categoryTotals[exp.category].total += exp.amount;
+        categoryTotals[exp.category].count += 1;
+      });
+      
+      const categories = Object.entries(categoryTotals)
+        .map(([category, data]) => ({
+          _id: category,
+          total: data.total,
+          count: data.count
+        }))
+        .sort((a, b) => b.total - a.total);
+      
+      res.json({ total, count, categories });
+    }
   } catch (error) {
     console.error('Error fetching stats:', error);
     res.status(500).json({ error: 'Failed to fetch statistics' });
@@ -71,11 +150,19 @@ router.get('/stats/summary', async (req, res) => {
 // GET /api/expenses/:id - Get single expense
 router.get('/:id', async (req, res) => {
   try {
-    const expense = await Expense.findById(req.params.id);
-    if (!expense) {
-      return res.status(404).json({ error: 'Expense not found' });
+    if (Expense) {
+      const expense = await Expense.findById(req.params.id);
+      if (!expense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+      res.json(expense);
+    } else {
+      const expense = expenses.find(exp => exp._id === req.params.id);
+      if (!expense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+      res.json(expense);
     }
-    res.json(expense);
   } catch (error) {
     console.error('Error fetching expense:', error);
     res.status(500).json({ error: 'Failed to fetch expense' });
@@ -87,16 +174,32 @@ router.post('/', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
 
-    const expense = new Expense({
-      title,
-      amount,
-      category,
-      description,
-      date: date || new Date()
-    });
+    if (Expense) {
+      const expense = new Expense({
+        title,
+        amount,
+        category,
+        description,
+        date: date || new Date()
+      });
 
-    const savedExpense = await expense.save();
-    res.status(201).json(savedExpense);
+      const savedExpense = await expense.save();
+      res.status(201).json(savedExpense);
+    } else {
+      const newExpense = {
+        _id: nextId.toString(),
+        title,
+        amount: parseFloat(amount),
+        category,
+        description: description || '',
+        date: date || new Date().toISOString(),
+        createdAt: new Date().toISOString()
+      };
+      
+      expenses.push(newExpense);
+      nextId++;
+      res.status(201).json(newExpense);
+    }
   } catch (error) {
     console.error('Error creating expense:', error);
     
@@ -114,17 +217,35 @@ router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
 
-    const expense = await Expense.findByIdAndUpdate(
-      req.params.id,
-      { title, amount, category, description, date },
-      { new: true, runValidators: true }
-    );
+    if (Expense) {
+      const expense = await Expense.findByIdAndUpdate(
+        req.params.id,
+        { title, amount, category, description, date },
+        { new: true, runValidators: true }
+      );
 
-    if (!expense) {
-      return res.status(404).json({ error: 'Expense not found' });
+      if (!expense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+
+      res.json(expense);
+    } else {
+      const expenseIndex = expenses.findIndex(exp => exp._id === req.params.id);
+      if (expenseIndex === -1) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+      
+      expenses[expenseIndex] = {
+        ...expenses[expenseIndex],
+        title,
+        amount: parseFloat(amount),
+        category,
+        description: description || '',
+        date: date || expenses[expenseIndex].date
+      };
+      
+      res.json(expenses[expenseIndex]);
     }
-
-    res.json(expense);
   } catch (error) {
     console.error('Error updating expense:', error);
     
@@ -140,9 +261,17 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/expenses/:id - Delete expense
 router.delete('/:id', async (req, res) => {
   try {
-    const expense = await Expense.findByIdAndDelete(req.params.id);
-    if (!expense) {
-      return res.status(404).json({ error: 'Expense not found' });
+    if (Expense) {
+      const expense = await Expense.findByIdAndDelete(req.params.id);
+      if (!expense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+    } else {
+      const expenseIndex = expenses.findIndex(exp => exp._id === req.params.id);
+      if (expenseIndex === -1) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+      expenses.splice(expenseIndex, 1);
     }
     res.json({ message: 'Expense deleted successfully' });
   } catch (error) {
