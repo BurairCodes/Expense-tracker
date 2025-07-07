@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Technical Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px solid #059669;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #059669;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .section h2 {
+            font-size: 1.5rem;
+            color: #1f2937;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+        }
+        
+        .section h3 {
+            font-size: 1.2rem;
+            color: #374151;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .section p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .tech-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .tech-card h4 {
+            color: #059669;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .tech-card p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.4;
+        }
+        
+        .schema-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .schema-table th,
+        .schema-table td {
+            border: 1px solid #d1d5db;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .schema-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .schema-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        
+        .api-endpoint {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .api-endpoint h4 {
+            color: #1e40af;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .api-endpoint p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .flow-diagram {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .flow-step {
+            display: inline-block;
+            background: #059669;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .arrow {
+            font-size: 1.2rem;
+            color: #059669;
+            margin: 0 10px;
+        }
+        
+        ul {
+            margin: 10px 0 10px 20px;
+        }
+        
+        li {
+            margin-bottom: 5px;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        
+        @media print {
+            body {
+                font-size: 12px;
+            }
+            .container {
+                padding: 20px;
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .section h2 {
+                font-size: 1.3rem;
+            }
+            .section h3 {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Expense Tracker</h1>
+            <p>Technical Documentation & Architecture Guide</p>
+        </div>
+
+        <div class="section">
+            <h2>📋 Project Overview</h2>
+            <p>The Expense Tracker is a full-stack web application designed to help users manage their personal finances by tracking expenses across different categories. The application features a modern, responsive interface built with vanilla HTML, CSS, and JavaScript, backed by a Node.js server with RESTful API endpoints.</p>
+            
+            <p>The application provides real-time expense tracking, categorization, search functionality, and statistical summaries, all wrapped in an intuitive user interface that follows modern design principles.</p>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Technology Stack</h2>
+            
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h4>Frontend</h4>
+                    <p>HTML5, CSS3, Vanilla JavaScript</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Backend</h4>
+                    <p>Node.js, Express.js</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Database</h4>
+                    <p>In-Memory Storage</p>
+                </div>
+                <div class="tech-card">
+                    <h4>Styling</h4>
+                    <p>Custom CSS with Flexbox & Grid</p>
+                </div>
+            </div>
+
+            <h3>Frontend Technologies</h3>
+            <ul>
+                <li><span class="highlight">HTML5</span>: Semantic markup with modern form elements and accessibility features</li>
+                <li><span class="highlight">CSS3</span>: Custom styling with advanced features like gradients, transitions, and responsive design</li>
+                <li><span class="highlight">Vanilla JavaScript</span>: ES6+ features including async/await, modules, and modern DOM manipulation</li>
+                <li><span class="highlight">Google Fonts</span>: Inter font family for modern typography</li>
+            </ul>
+
+            <h3>Backend Technologies</h3>
+            <ul>
+                <li><span class="highlight">Node.js</span>: JavaScript runtime for server-side execution</li>
+                <li><span class="highlight">Express.js</span>: Web framework for building RESTful APIs</li>
+                <li><span class="highlight">CORS</span>: Cross-Origin Resource Sharing middleware</li>
+                <li><span class="highlight">dotenv</span>: Environment variable management</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🗄️ Database Design</h2>
+            
+            <h3>Storage Architecture</h3>
+            <p>The application uses <span class="highlight">in-memory storage</span> for simplicity and demonstration purposes. All expense data is stored in JavaScript arrays within the server's memory, making it perfect for development and testing environments.</p>
+
+            <h3>Data Schema</h3>
+            <p>The expense data follows a well-defined schema with the following structure:</p>
+
+            <table class="schema-table">
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>_id</td>
+                        <td>String</td>
+                        <td>Yes</td>
+                        <td>Unique identifier (auto-generated)</td>
+                    </tr>
+                    <tr>
+                        <td>title</td>
+                        <td>String</td>
+                        <td>Yes</td>
+                        <td>Expense title/name</td>
+                    </tr>
+                    <tr>
+                        <td>amount</td>
+                        <td>Number</td>
+                        <td>Yes</td>
+                        <td>Expense amount (positive number)</td>
+                    </tr>
+                    <tr>
+                        <td>category</td>
+                        <td>String</td>
+                        <td>Yes</td>
+                        <td>Expense category (predefined options)</td>
+                    </tr>
+                    <tr>
+                        <td>date</td>
+                        <td>String</td>
+                        <td>Yes</td>
+                        <td>Expense date (ISO format)</td>
+                    </tr>
+                    <tr>
+                        <td>description</td>
+                        <td>String</td>
+                        <td>No</td>
+                        <td>Optional expense description</td>
+                    </tr>
+                    <tr>
+                        <td>createdAt</td>
+                        <td>String</td>
+                        <td>Yes</td>
+                        <td>Record creation timestamp</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Sample Data Structure</h3>
+            <div class="code-block">
+{
+  "_id": "1",
+  "title": "Grocery Shopping",
+  "amount": 85.50,
+  "category": "Food",
+  "description": "Weekly grocery shopping at the supermarket",
+  "date": "2024-01-15",
+  "createdAt": "2024-01-15T10:30:00.000Z"
+}
+            </div>
+
+            <h3>Categories</h3>
+            <p>The application supports the following predefined expense categories:</p>
+            <ul>
+                <li>Food</li>
+                <li>Transportation</li>
+                <li>Entertainment</li>
+                <li>Shopping</li>
+                <li>Bills</li>
+                <li>Healthcare</li>
+                <li>Education</li>
+                <li>Travel</li>
+                <li>Other</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔗 API Architecture</h2>
+            
+            <h3>RESTful Endpoints</h3>
+            <p>The backend provides a complete set of RESTful API endpoints for expense management:</p>
+
+            <div class="api-endpoint">
+                <h4>GET /api/expenses</h4>
+                <p>Retrieve all expenses with optional filtering by category, start date, and end date</p>
+            </div>
+
+            <div class="api-endpoint">
+                <h4>GET /api/expenses/:id</h4>
+                <p>Retrieve a specific expense by its unique identifier</p>
+            </div>
+
+            <div class="api-endpoint">
+                <h4>POST /api/expenses</h4>
+                <p>Create a new expense record with validation</p>
+            </div>
+
+            <div class="api-endpoint">
+                <h4>PUT /api/expenses/:id</h4>
+                <p>Update an existing expense record</p>
+            </div>
+
+            <div class="api-endpoint">
+                <h4>DELETE /api/expenses/:id</h4>
+                <p>Delete an expense record permanently</p>
+            </div>
+
+            <div class="api-endpoint">
+                <h4>GET /api/expenses/stats/summary</h4>
+                <p>Retrieve statistical summary including total amount, count, and category breakdown</p>
+            </div>
+
+            <h3>Request/Response Format</h3>
+            <p>All API endpoints use JSON format for data exchange. The server validates incoming data and returns appropriate HTTP status codes with descriptive error messages.</p>
+        </div>
+
+        <div class="section">
+            <h2>🏗️ Application Architecture</h2>
+            
+            <h3>System Flow</h3>
+            <div class="flow-diagram">
+                <div class="flow-step">User Interface</div>
+                <span class="arrow">→</span>
+                <div class="flow-step">JavaScript Frontend</div>
+                <span class="arrow">→</span>
+                <div class="flow-step">Express API</div>
+                <span class="arrow">→</span>
+                <div class="flow-step">In-Memory Storage</div>
+            </div>
+
+            <h3>Frontend Architecture</h3>
+            <ul>
+                <li><span class="highlight">Modular JavaScript</span>: Code organized into logical functions and modules</li>
+                <li><span class="highlight">Event-Driven</span>: User interactions trigger API calls and UI updates</li>
+                <li><span class="highlight">Responsive Design</span>: CSS Grid and Flexbox for adaptive layouts</li>
+                <li><span class="highlight">Real-time Updates</span>: Immediate UI feedback and data synchronization</li>
+            </ul>
+
+            <h3>Backend Architecture</h3>
+            <ul>
+                <li><span class="highlight">MVC Pattern</span>: Separation of routes, models, and business logic</li>
+                <li><span class="highlight">Middleware Stack</span>: CORS, JSON parsing, and static file serving</li>
+                <li><span class="highlight">Error Handling</span>: Comprehensive error catching and user-friendly messages</li>
+                <li><span class="highlight">Data Validation</span>: Server-side validation for all input data</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📁 File Structure</h2>
+            <div class="code-block">
+expense-tracker/
+├── package.json              # Project configuration & dependencies
+├── server/
+│   ├── index.js              # Main server file & Express setup
+│   ├── models/
+│   │   └── Expense.js        # Data model & in-memory operations
+│   └── routes/
+│       └── expenses.js       # API route handlers
+└── public/
+    ├── index.html            # Main HTML structure
+    ├── styles.css            # Complete styling & responsive design
+    └── script.js             # Frontend JavaScript & API integration
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Data Flow & Integration</h2>
+            
+            <h3>User Interaction Flow</h3>
+            <ol>
+                <li><span class="highlight">User Action</span>: User interacts with the interface (add, edit, delete, search)</li>
+                <li><span class="highlight">Frontend Processing</span>: JavaScript validates input and prepares API request</li>
+                <li><span class="highlight">API Call</span>: HTTP request sent to Express server endpoint</li>
+                <li><span class="highlight">Server Processing</span>: Express routes handle request, validate data, and update storage</li>
+                <li><span class="highlight">Response</span>: Server returns JSON response with updated data</li>
+                <li><span class="highlight">UI Update</span>: Frontend processes response and updates interface</li>
+            </ol>
+
+            <h3>State Management</h3>
+            <p>The application maintains state through:</p>
+            <ul>
+                <li><span class="highlight">Global Variables</span>: Frontend stores current expenses, stats, and UI state</li>
+                <li><span class="highlight">Server Memory</span>: Backend maintains expense data in JavaScript arrays</li>
+                <li><span class="highlight">Real-time Sync</span>: Automatic data refresh after CRUD operations</li>
+            </ul>
+
+            <h3>Error Handling</h3>
+            <p>Comprehensive error handling includes:</p>
+            <ul>
+                <li>Client-side validation before API calls</li>
+                <li>Server-side validation with descriptive error messages</li>
+                <li>Network error handling with user-friendly notifications</li>
+                <li>Graceful degradation when server is unavailable</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Deployment & Setup</h2>
+            
+            <h3>Local Development</h3>
+            <ol>
+                <li>Install Node.js (version 14 or higher)</li>
+                <li>Extract project files and navigate to directory</li>
+                <li>Run <code>npm install</code> to install dependencies</li>
+                <li>Run <code>npm start</code> to start the server</li>
+                <li>Access application at <code>http://localhost:5000</code></li>
+            </ol>
+
+            <h3>Production Considerations</h3>
+            <p>For production deployment, consider:</p>
+            <ul>
+                <li>Replace in-memory storage with persistent database (MongoDB, PostgreSQL)</li>
+                <li>Add user authentication and authorization</li>
+                <li>Implement data backup and recovery mechanisms</li>
+                <li>Add comprehensive logging and monitoring</li>
+                <li>Configure HTTPS and security headers</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📊 Features & Functionality</h2>
+            
+            <h3>Core Features</h3>
+            <ul>
+                <li><span class="highlight">Expense Management</span>: Create, read, update, and delete expenses</li>
+                <li><span class="highlight">Categorization</span>: Organize expenses by predefined categories</li>
+                <li><span class="highlight">Search & Filter</span>: Find expenses by title, description, or category</li>
+                <li><span class="highlight">Statistics</span>: Real-time summary of total expenses, count, and categories</li>
+                <li><span class="highlight">Responsive Design</span>: Optimized for desktop, tablet, and mobile devices</li>
+            </ul>
+
+            <h3>User Experience</h3>
+            <ul>
+                <li>Intuitive modal-based forms for expense entry</li>
+                <li>Real-time search with instant results</li>
+                <li>Visual feedback with hover states and transitions</li>
+                <li>Error handling with clear user messages</li>
+                <li>Loading states for better perceived performance</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Technical Specifications</h2>
+            
+            <h3>Browser Compatibility</h3>
+            <p>The application supports modern browsers with ES6+ features:</p>
+            <ul>
+                <li>Chrome 60+</li>
+                <li>Firefox 55+</li>
+                <li>Safari 12+</li>
+                <li>Edge 79+</li>
+            </ul>
+
+            <h3>Performance</h3>
+            <ul>
+                <li>Lightweight vanilla JavaScript (no framework overhead)</li>
+                <li>Optimized CSS with minimal external dependencies</li>
+                <li>Efficient DOM manipulation and event handling</li>
+                <li>Fast in-memory data operations</li>
+            </ul>
+
+            <h3>Security</h3>
+            <ul>
+                <li>Input validation on both client and server sides</li>
+                <li>CORS configuration for cross-origin requests</li>
+                <li>SQL injection prevention (not applicable with current storage)</li>
+                <li>XSS protection through proper data handling</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

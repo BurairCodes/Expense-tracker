@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Finance Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Arial:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>💰 Personal Finance Tracker</h1>
+            <p>Track your income, expenses and scheduled payments</p>
+        </header>
+
+        <!-- Currency Selector -->
+        <div class="currency-section">
+            <label for="currency-select">Currency:</label>
+            <select id="currency-select">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="CAD">CAD ($)</option>
+                <option value="AUD">AUD ($)</option>
+            </select>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards">
+            <div class="card income-card">
+                <h3>Total Income</h3>
+                <p id="total-income" class="amount">$0.00</p>
+                <button id="add-income-btn" class="small-btn">Add Income</button>
+            </div>
+            <div class="card expense-card">
+                <h3>Total Expenses</h3>
+                <p id="total-expenses" class="amount">$0.00</p>
+                <button id="add-expense-btn" class="small-btn">Add Expense</button>
+            </div>
+            <div class="card balance-card">
+                <h3>Balance</h3>
+                <p id="balance" class="amount">$0.00</p>
+            </div>
+        </div>
+
+        <!-- Pie Chart Section -->
+        <div class="chart-section">
+            <h3>Expense Distribution</h3>
+            <div class="chart-container">
+                <canvas id="expense-chart" width="300" height="300"></canvas>
+                <div class="chart-legend" id="chart-legend"></div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="expenses">Expenses</button>
+            <button class="tab-btn" data-tab="income">Income</button>
+            <button class="tab-btn" data-tab="scheduled">Scheduled Charges</button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search..." class="search-input">
+            <select id="category-filter" class="filter-select">
+                <option value="All">All Categories</option>
+                <option value="Food">Food</option>
+                <option value="Transportation">Transportation</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Bills">Bills</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Education">Education</option>
+                <option value="Travel">Travel</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="expenses-section" class="content-section active">
+            <div id="expenses-list" class="items-list"></div>
+            <div id="expenses-empty" class="empty-message" style="display: none;">
+                <p>No expenses found. Click "Add Expense" to get started!</p>
+            </div>
+        </div>
+
+        <div id="income-section" class="content-section">
+            <div id="income-list" class="items-list"></div>
+            <div id="income-empty" class="empty-message" style="display: none;">
+                <p>No income recorded. Click "Add Income" to get started!</p>
+            </div>
+        </div>
+
+        <div id="scheduled-section" class="content-section">
+            <button id="add-scheduled-btn" class="add-btn">Add Scheduled Charge</button>
+            <div id="scheduled-list" class="items-list"></div>
+            <div id="scheduled-empty" class="empty-message" style="display: none;">
+                <p>No scheduled charges. Click "Add Scheduled Charge" to set up recurring payments!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Items -->
+    <div id="modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add Item</h2>
+                <span class="close" id="close-modal">&times;</span>
+            </div>
+            <form id="item-form">
+                <div class="form-group">
+                    <label for="item-title">Title:</label>
+                    <input type="text" id="item-title" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-amount">Amount:</label>
+                    <input type="number" id="item-amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-category">Category:</label>
+                    <select id="item-category">
+                        <option value="Food">Food</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Healthcare">Healthcare</option>
+                        <option value="Education">Education</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-date">Date:</label>
+                    <input type="date" id="item-date" required>
+                </div>
+                <div class="form-group" id="frequency-group" style="display: none;">
+                    <label for="item-frequency">Frequency:</label>
+                    <select id="item-frequency">
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-description">Description:</label>
+                    <textarea id="item-description" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-btn">Cancel</button>
+                    <button type="submit" id="save-btn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
