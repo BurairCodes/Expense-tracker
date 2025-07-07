@@ -17,8 +17,8 @@ let income = [
 
 let nextId = 2;
 
-// Deferred loading of Mongoose model
-const getIncomeModel = (async () => {
+// Function to get Mongoose model, fallback to null if not available
+async function getIncomeModel() {
   try {
     const incomeModel = await import('../models/Income.js');
     return incomeModel.default;
@@ -26,11 +26,14 @@ const getIncomeModel = (async () => {
     console.log('Using in-memory storage for income');
     return null;
   }
+}
+  }
 })();
 
 // GET /api/income - Get all income with optional filters
 router.get('/', async (req, res) => {
   try {
+    const Income = await getIncomeModel();
     const Income = await getIncomeModel;
     
     if (Income) {
@@ -78,6 +81,7 @@ router.get('/', async (req, res) => {
 // GET /api/income/stats/summary - Get income statistics
 router.get('/stats/summary', async (req, res) => {
   try {
+    const Income = await getIncomeModel();
     const Income = await getIncomeModel;
     
     if (Income) {
@@ -113,6 +117,7 @@ router.post('/', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
     const Income = await getIncomeModel;
+    const Income = await getIncomeModel();
 
     if (Income) {
       const incomeRecord = new Income({
@@ -157,6 +162,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
     const Income = await getIncomeModel;
+    const Income = await getIncomeModel();
 
     if (Income) {
       const incomeRecord = await Income.findByIdAndUpdate(
@@ -202,6 +208,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/income/:id - Delete income
 router.delete('/:id', async (req, res) => {
   try {
+    const Income = await getIncomeModel();
     const Income = await getIncomeModel;
     
     if (Income) {

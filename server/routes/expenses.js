@@ -26,8 +26,8 @@ let expenses = [
 
 let nextId = 3;
 
-// Deferred loading of Mongoose model
-const getExpenseModel = (async () => {
+// Function to get Mongoose model, fallback to null if not available
+async function getExpenseModel() {
   try {
     const expenseModel = await import('../models/Expense.js');
     return expenseModel.default;
@@ -35,11 +35,14 @@ const getExpenseModel = (async () => {
     console.log('Using in-memory storage for expenses');
     return null;
   }
+}
+  }
 })();
 
 // GET /api/expenses - Get all expenses with optional filters
 router.get('/', async (req, res) => {
   try {
+    const Expense = await getExpenseModel();
     const Expense = await getExpenseModel;
     
     if (Expense) {
@@ -89,6 +92,7 @@ router.get('/', async (req, res) => {
 // GET /api/expenses/stats/summary - Get expense statistics
 router.get('/stats/summary', async (req, res) => {
   try {
+    const Expense = await getExpenseModel();
     const Expense = await getExpenseModel;
     
     if (Expense) {
@@ -156,6 +160,7 @@ router.get('/stats/summary', async (req, res) => {
 // GET /api/expenses/:id - Get single expense
 router.get('/:id', async (req, res) => {
   try {
+    const Expense = await getExpenseModel();
     const Expense = await getExpenseModel;
     
     if (Expense) {
@@ -182,6 +187,7 @@ router.post('/', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
     const Expense = await getExpenseModel;
+    const Expense = await getExpenseModel();
 
     if (Expense) {
       const expense = new Expense({
@@ -226,6 +232,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
     const Expense = await getExpenseModel;
+    const Expense = await getExpenseModel();
 
     if (Expense) {
       const expense = await Expense.findByIdAndUpdate(
@@ -271,6 +278,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/expenses/:id - Delete expense
 router.delete('/:id', async (req, res) => {
   try {
+    const Expense = await getExpenseModel();
     const Expense = await getExpenseModel;
     
     if (Expense) {

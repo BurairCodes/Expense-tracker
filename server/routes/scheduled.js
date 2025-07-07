@@ -19,8 +19,8 @@ let scheduledCharges = [
 
 let nextId = 2;
 
-// Deferred loading of Mongoose model
-const getScheduledChargeModel = (async () => {
+// Function to get Mongoose model, fallback to null if not available
+async function getScheduledChargeModel() {
   try {
     const scheduledModel = await import('../models/ScheduledCharge.js');
     return scheduledModel.default;
@@ -28,11 +28,14 @@ const getScheduledChargeModel = (async () => {
     console.log('Using in-memory storage for scheduled charges');
     return null;
   }
+}
+  }
 })();
 
 // GET /api/scheduled - Get all scheduled charges
 router.get('/', async (req, res) => {
   try {
+    const ScheduledCharge = await getScheduledChargeModel();
     const ScheduledCharge = await getScheduledChargeModel;
     
     if (ScheduledCharge) {
@@ -74,6 +77,7 @@ router.post('/', async (req, res) => {
   try {
     const { title, amount, category, frequency, description, date } = req.body;
     const ScheduledCharge = await getScheduledChargeModel;
+    const ScheduledCharge = await getScheduledChargeModel();
 
     if (ScheduledCharge) {
       const scheduledCharge = new ScheduledCharge({
@@ -121,6 +125,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, frequency, description, date } = req.body;
     const ScheduledCharge = await getScheduledChargeModel;
+    const ScheduledCharge = await getScheduledChargeModel();
 
     if (ScheduledCharge) {
       const scheduledCharge = await ScheduledCharge.findByIdAndUpdate(
@@ -167,6 +172,7 @@ router.put('/:id', async (req, res) => {
 // DELETE /api/scheduled/:id - Delete scheduled charge
 router.delete('/:id', async (req, res) => {
   try {
+    const ScheduledCharge = await getScheduledChargeModel();
     const ScheduledCharge = await getScheduledChargeModel;
     
     if (ScheduledCharge) {
