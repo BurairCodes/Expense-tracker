@@ -27,14 +27,11 @@ async function getIncomeModel() {
     return null;
   }
 }
-  }
-})();
 
 // GET /api/income - Get all income with optional filters
 router.get('/', async (req, res) => {
   try {
     const Income = await getIncomeModel();
-    const Income = await getIncomeModel;
     
     if (Income) {
       const { category, startDate, endDate } = req.query;
@@ -82,7 +79,6 @@ router.get('/', async (req, res) => {
 router.get('/stats/summary', async (req, res) => {
   try {
     const Income = await getIncomeModel();
-    const Income = await getIncomeModel;
     
     if (Income) {
       const totalResult = await Income.aggregate([
@@ -116,7 +112,6 @@ router.get('/stats/summary', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
-    const Income = await getIncomeModel;
     const Income = await getIncomeModel();
 
     if (Income) {
@@ -161,7 +156,6 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { title, amount, category, description, date } = req.body;
-    const Income = await getIncomeModel;
     const Income = await getIncomeModel();
 
     if (Income) {
@@ -209,7 +203,6 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const Income = await getIncomeModel();
-    const Income = await getIncomeModel;
     
     if (Income) {
       const incomeRecord = await Income.findByIdAndDelete(req.params.id);

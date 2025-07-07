@@ -34,7 +34,6 @@ async function getScheduledChargeModel() {
 router.get('/', async (req, res) => {
   try {
     const ScheduledCharge = await getScheduledChargeModel();
-    const ScheduledCharge = await getScheduledChargeModel();
     
     if (ScheduledCharge) {
       const { category, frequency } = req.query;
